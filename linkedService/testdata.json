@@ -4,7 +4,7 @@
 		"annotations": [],
 		"type": "WebConnection",
 		"typeProperties": {
-			"url": "https://bankclv.azurewebsites.net/api/",
+			"url": "https://bankclv.azurewebsites.net/api",
 			"enableServerCertificateValidation": true,
 			"authenticationType": "Anonymous"
 		}
