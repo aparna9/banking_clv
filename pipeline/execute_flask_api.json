@@ -16,7 +16,11 @@
 				"userProperties": [],
 				"typeProperties": {
 					"method": "POST",
-					"url": "https://bankclv.azurewebsites.net/api/customers"
+					"relativeUrl": "https://bankclv.azurewebsites.net/api/customers"
+				},
+				"linkedServiceName": {
+					"referenceName": "testdata",
+					"type": "LinkedServiceReference"
 				}
 			}
 		],
