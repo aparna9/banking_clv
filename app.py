@@ -7,8 +7,7 @@ from datetime import datetime
 app = Flask(__name__)
 fake = Faker()
 
-# Set seed for reproducibility
-np.random.seed(42)
+
 
 # Generate synthetic customer data
 customers = [{
