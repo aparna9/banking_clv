@@ -1,5 +1,10 @@
 {
 	"name": "bankingclvdatafact",
+	"properties": {
+		"globalConfigurations": {
+			"PipelineBillingEnabled": "true"
+		}
+	},
 	"location": "centralus",
 	"identity": {
 		"type": "SystemAssigned",
