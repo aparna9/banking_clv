@@ -1,0 +1,12 @@
+{
+	"name": "testdata",
+	"properties": {
+		"annotations": [],
+		"type": "WebConnection",
+		"typeProperties": {
+			"url": "https://bankclv.azurewebsites.net/api",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Anonymous"
+		}
+	}
+}
