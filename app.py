@@ -47,7 +47,7 @@ for account in accounts:
             'TransactionDate': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         })
 
-@app.route('/api/customers')
+@app.route('/api/customers' , methods=['POST'])
 def get_customers():
     metadata = {'total_records': len(customers), 'generated_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
     response = {'data': customers, 'metadata': metadata}
