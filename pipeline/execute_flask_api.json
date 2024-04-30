@@ -35,11 +35,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"method": "POST",
-					"relativeUrl": "https://bankclv.azurewebsites.net/api/accounts"
-				},
-				"linkedServiceName": {
-					"referenceName": "testdata",
-					"type": "LinkedServiceReference"
+					"url": "https://bankclv.azurewebsites.net/api/accounts"
 				}
 			}
 		],
