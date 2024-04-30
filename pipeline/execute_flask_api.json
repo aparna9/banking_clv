@@ -16,16 +16,14 @@
 				"userProperties": [],
 				"typeProperties": {
 					"method": "POST",
-					"relativeUrl": "https://bankclv.azurewebsites.net/api/customers"
-				},
-				"linkedServiceName": {
-					"referenceName": "testdata",
-					"type": "LinkedServiceReference"
+					"url": "https://bankclv.azurewebsites.net/api/customers"
 				}
 			},
 			{
 				"name": "account_testdata",
 				"type": "WebActivity",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
