@@ -53,13 +53,13 @@ def get_customers():
     response = {'data': customers, 'metadata': metadata}
     return jsonify(response)
 
-@app.route('/api/accounts')
+@app.route('/api/accounts' , methods=['POST'])
 def get_accounts():
     metadata = {'total_records': len(accounts), 'generated_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
     response = {'data': accounts, 'metadata': metadata}
     return jsonify(response)
 
-@app.route('/api/transactions')
+@app.route('/api/transactions' , methods=['POST'])
 def get_transactions():
     metadata = {'total_records': len(transactions), 'generated_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
     response = {'data': transactions, 'metadata': metadata}
