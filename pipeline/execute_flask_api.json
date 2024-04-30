@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Web1",
+				"name": "customer_testdata",
 				"type": "WebActivity",
 				"dependsOn": [],
 				"policy": {
@@ -15,12 +15,42 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"method": "GET",
-					"relativeUrl": "https://bankclv.azurewebsites.net/api/customers"
+					"method": "POST",
+					"url": "https://bankclv.azurewebsites.net/api/customers"
+				}
+			},
+			{
+				"name": "account_testdata",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
 				},
-				"linkedServiceName": {
-					"referenceName": "testdata",
-					"type": "LinkedServiceReference"
+				"userProperties": [],
+				"typeProperties": {
+					"method": "POST",
+					"url": "https://bankclv.azurewebsites.net/api/accounts"
+				}
+			},
+			{
+				"name": "transactions_testdata",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "POST",
+					"url": "https://bankclv.azurewebsites.net/api/transactions"
 				}
 			}
 		],
