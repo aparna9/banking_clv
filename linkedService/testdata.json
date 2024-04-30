@@ -5,7 +5,7 @@
 		"type": "WebConnection",
 		"typeProperties": {
 			"url": "https://bankclv.azurewebsites.net/api/customers",
-			"enableServerCertificateValidation": true,
+			"enableServerCertificateValidation": false,
 			"authenticationType": "Anonymous"
 		}
 	}
