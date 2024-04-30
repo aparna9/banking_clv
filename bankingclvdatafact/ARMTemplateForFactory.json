@@ -6,6 +6,10 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "bankingclvdatafact"
+		},
+		"testdata_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://bankclv.azurewebsites.net/api/customers"
 		}
 	},
 	"variables": {
@@ -19,7 +23,7 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "Web1",
+						"name": "customer_testdata",
 						"type": "WebActivity",
 						"dependsOn": [],
 						"policy": {
@@ -31,9 +35,48 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"method": "GET",
+							"method": "POST",
 							"headers": {},
-							"url": "https://bankclv.azurewebsites.net/api/customers"
+							"url": "https://bankclv.azurewebsites.net/api/customers",
+							"body": {}
+						}
+					},
+					{
+						"name": "account_testdata",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"method": "POST",
+							"headers": {},
+							"url": "https://bankclv.azurewebsites.net/api/accounts",
+							"body": {}
+						}
+					},
+					{
+						"name": "transactions_testdata",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"method": "POST",
+							"headers": {},
+							"url": "https://bankclv.azurewebsites.net/api/transactions",
+							"body": {}
 						}
 					}
 				],
@@ -41,6 +84,23 @@
 					"elapsedTimeMetric": {}
 				},
 				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/testdata')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/testdata')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "WebConnection",
+				"typeProperties": {
+					"url": "[parameters('testdata_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": false,
+					"authenticationType": "Anonymous"
+				}
 			},
 			"dependsOn": []
 		}

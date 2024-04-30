@@ -4,6 +4,9 @@
 	"parameters": {
 		"factoryName": {
 			"value": "bankingclvdatafact"
+		},
+		"testdata_properties_typeProperties_url": {
+			"value": "https://bankclv.azurewebsites.net/api/customers"
 		}
 	}
 }
