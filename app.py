@@ -72,6 +72,7 @@ import json
 import numpy as np
 from faker import Faker
 from flask import Flask, jsonify, request
+from datetime import datetime
 
 app = Flask(__name__)
 fake = Faker()
@@ -120,31 +121,35 @@ def generate_data():
 
     return customers, accounts, transactions
 
-@app.route('/api/customers', methods=['POST'])
-def update_customers():
+@app.route('/api/data', methods=['POST'])
+def update_data():
     global customers, accounts, transactions
     customers, accounts, transactions = generate_data()
-    metadata = {'total_records': len(customers), 'generated_at': fake.date_time()}
-    response = {'data': customers, 'metadata': metadata}
-    return jsonify(response)
+    current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    metadata = {'generated_at': current_datetime}
+    return jsonify({'message': 'Data refreshed successfully', 'metadata': metadata})
 
-@app.route('/api/accounts', methods=['POST'])
-def update_accounts():
-    global customers, accounts, transactions
-    customers, accounts, transactions = generate_data()
-    metadata = {'total_records': len(accounts), 'generated_at': fake.date_time()}
-    response = {'data': accounts, 'metadata': metadata}
-    return jsonify(response)
+@app.route('/api/customers', methods=['GET'])
+def get_customers():
+    global customers
+    current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    metadata = {'total_records': len(customers), 'generated_at': current_datetime}
+    return jsonify({'data': customers, 'metadata': metadata})
 
-@app.route('/api/transactions', methods=['POST'])
-def update_transactions():
-    global customers, accounts, transactions
-    customers, accounts, transactions = generate_data()
-    metadata = {'total_records': len(transactions), 'generated_at': fake.date_time()}
-    response = {'data': transactions, 'metadata': metadata}
-    return jsonify(response)
+@app.route('/api/accounts', methods=['GET'])
+def get_accounts():
+    global accounts
+    current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    metadata = {'total_records': len(accounts), 'generated_at': current_datetime}
+    return jsonify({'data': accounts, 'metadata': metadata})
+
+@app.route('/api/transactions', methods=['GET'])
+def get_transactions():
+    global transactions
+    current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    metadata = {'total_records': len(transactions), 'generated_at': current_datetime}
+    return jsonify({'data': transactions, 'metadata': metadata})
 
 if __name__ == '__main__':
     customers, accounts, transactions = generate_data()
     app.run(debug=True)
-
