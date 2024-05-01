@@ -52,6 +52,23 @@
 					"method": "GET",
 					"url": "https://bankclv.azurewebsites.net/api/transactions"
 				}
+			},
+			{
+				"name": "post the updated data",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "POST",
+					"url": "https://bankclv.azurewebsites.net/api/data"
+				}
 			}
 		],
 		"annotations": []
