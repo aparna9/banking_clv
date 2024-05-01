@@ -15,7 +15,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"method": "POST",
+					"method": "GET",
 					"url": "https://bankclv.azurewebsites.net/api/customers"
 				}
 			},
