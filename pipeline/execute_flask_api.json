@@ -92,8 +92,8 @@
 				}
 			},
 			{
-				"name": "loadoltp",
-				"type": "DatabricksSparkPython",
+				"name": "OTLP EL",
+				"type": "DatabricksNotebook",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -104,7 +104,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"pythonFile": "dbfs:/my/load_oltp.py"
+					"notebookPath": "/Users/amokkapati@mokkapati.onmicrosoft.com/ETL for OLTP"
 				},
 				"linkedServiceName": {
 					"referenceName": "AzureDatabricks1",
