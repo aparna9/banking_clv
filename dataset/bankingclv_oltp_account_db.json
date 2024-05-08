@@ -1,5 +1,5 @@
 {
-	"name": "bankingclv_oltp_database",
+	"name": "bankingclv_oltp_account_db",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "bankingclv_db",
@@ -10,7 +10,7 @@
 		"schema": [],
 		"typeProperties": {
 			"schema": "public",
-			"table": "bnk_account"
+			"table": "bnk_customer"
 		}
 	}
 }
