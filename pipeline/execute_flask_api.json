@@ -143,7 +143,57 @@
 						"writeBatchTimeout": "00:30:00",
 						"writeMethod": "CopyCommand"
 					},
-					"enableStaging": false
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['data'][0]['Age']"
+								},
+								"sink": {
+									"name": "cust_age",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"path": "$['data'][0]['CustomerID']"
+								},
+								"sink": {
+									"name": "cust_id",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"path": "$['data'][0]['CustomerName']"
+								},
+								"sink": {
+									"name": "cust_name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['data'][0]['Gender']"
+								},
+								"sink": {
+									"name": "cust_gen",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['data'][0]['Income']"
+								},
+								"sink": {
+									"name": "cust_income",
+									"type": "Decimal"
+								}
+							}
+						]
+					}
 				},
 				"inputs": [
 					{
