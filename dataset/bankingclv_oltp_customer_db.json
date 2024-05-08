@@ -1,5 +1,5 @@
 {
-	"name": "bankingclv_oltp_account_db",
+	"name": "bankingclv_oltp_customer_db",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "bankingclv_db",
