@@ -2,11 +2,15 @@
 	"name": "bankingclv_oltp_database",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "banking_clv_db",
+			"referenceName": "bankingclv_db",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
 		"type": "AzurePostgreSqlTable",
-		"schema": []
+		"schema": [],
+		"typeProperties": {
+			"schema": "public",
+			"table": "bnk_account"
+		}
 	}
 }
