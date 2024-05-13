@@ -114,8 +114,8 @@
 				}
 			},
 			{
-				"name": "load customer data",
-				"type": "Copy",
+				"name": "loop all customers",
+				"type": "ForEach",
 				"dependsOn": [
 					{
 						"activity": "customer_testdata",
@@ -124,92 +124,105 @@
 						]
 					}
 				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
 				"userProperties": [],
 				"typeProperties": {
-					"source": {
-						"type": "RestSource",
-						"httpRequestTimeout": "00:01:40",
-						"requestInterval": "00.00:00:00.010",
-						"requestMethod": "GET"
-					},
-					"sink": {
-						"type": "AzurePostgreSQLSink",
-						"writeBatchSize": 1000000,
-						"writeBatchTimeout": "00:30:00",
-						"writeMethod": "BulkInsert"
-					},
-					"enableStaging": false,
-					"enableSkipIncompatibleRow": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"mappings": [
-							{
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "load customer data",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
 								"source": {
-									"path": "$['data'][0]['Age']"
+									"type": "RestSource",
+									"httpRequestTimeout": "00:01:40",
+									"requestInterval": "00.00:00:00.010",
+									"requestMethod": "GET",
+									"paginationRules": {
+										"supportRFC5988": "true"
+									}
 								},
 								"sink": {
-									"name": "cust_age",
-									"type": "Int32"
+									"type": "AzurePostgreSQLSink",
+									"writeBatchSize": 1000000,
+									"writeBatchTimeout": "00:30:00",
+									"writeMethod": "BulkInsert"
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"mappings": [
+										{
+											"source": {
+												"path": "$['data'][0]['Age']"
+											},
+											"sink": {
+												"name": "cust_age",
+												"type": "Int32"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data'][0]['CustomerID']"
+											},
+											"sink": {
+												"name": "cust_id",
+												"type": "Int32"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data'][0]['CustomerName']"
+											},
+											"sink": {
+												"name": "cust_name",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data'][0]['Gender']"
+											},
+											"sink": {
+												"name": "cust_gen",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data'][0]['Income']"
+											},
+											"sink": {
+												"name": "cust_income",
+												"type": "Decimal"
+											}
+										}
+									]
 								}
 							},
-							{
-								"source": {
-									"path": "$['data'][0]['CustomerID']"
-								},
-								"sink": {
-									"name": "cust_id",
-									"type": "Int32"
+							"inputs": [
+								{
+									"referenceName": "customer_restsource",
+									"type": "DatasetReference"
 								}
-							},
-							{
-								"source": {
-									"path": "$['data'][0]['CustomerName']"
-								},
-								"sink": {
-									"name": "cust_name",
-									"type": "String"
+							],
+							"outputs": [
+								{
+									"referenceName": "bankingclv_oltp_customer_db",
+									"type": "DatasetReference"
 								}
-							},
-							{
-								"source": {
-									"path": "$['data'][0]['Gender']"
-								},
-								"sink": {
-									"name": "cust_gen",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"path": "$['data'][0]['Income']"
-								},
-								"sink": {
-									"name": "cust_income",
-									"type": "Decimal"
-								}
-							}
-						]
-					}
-				},
-				"inputs": [
-					{
-						"referenceName": "customer_restsource",
-						"type": "DatasetReference"
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "bankingclv_oltp_customer_db",
-						"type": "DatasetReference"
-					}
-				]
+							]
+						}
+					]
+				}
 			}
 		],
 		"annotations": []
