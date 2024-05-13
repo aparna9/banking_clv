@@ -267,6 +267,15 @@
 						"mappings": [
 							{
 								"source": {
+									"path": "['Age']"
+								},
+								"sink": {
+									"name": "cust_age",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
 									"path": "['CustomerID']"
 								},
 								"sink": {
@@ -281,6 +290,24 @@
 								"sink": {
 									"name": "cust_name",
 									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['Gender']"
+								},
+								"sink": {
+									"name": "cust_gen",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['Income']"
+								},
+								"sink": {
+									"name": "cust_income",
+									"type": "Decimal"
 								}
 							}
 						],
