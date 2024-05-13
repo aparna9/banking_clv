@@ -127,7 +127,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@range(1, int(activity('customer_testdata').output['meta']['total_records']))",
+						"value": "@range(1, int(activity('customer_testdata').output['metadata']['total_records']))",
 						"type": "Expression"
 					},
 					"isSequential": false,
