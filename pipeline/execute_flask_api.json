@@ -265,6 +265,15 @@
 						"mappings": [
 							{
 								"source": {
+									"path": "['Address']"
+								},
+								"sink": {
+									"name": "cust_address",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
 									"path": "['Age']"
 								},
 								"sink": {
@@ -306,6 +315,15 @@
 								"sink": {
 									"name": "cust_income",
 									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"path": "['JoinDate']"
+								},
+								"sink": {
+									"name": "cust_join_date",
+									"type": "DateTime"
 								}
 							}
 						],
