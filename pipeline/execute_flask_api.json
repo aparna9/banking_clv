@@ -310,7 +310,8 @@
 									"type": "Decimal"
 								}
 							}
-						]
+						],
+						"collectionReference": "$['data']"
 					}
 				},
 				"inputs": [
