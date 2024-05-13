@@ -267,16 +267,7 @@
 						"mappings": [
 							{
 								"source": {
-									"path": "$['data'][0]['Age']"
-								},
-								"sink": {
-									"name": "cust_age",
-									"type": "Int32"
-								}
-							},
-							{
-								"source": {
-									"path": "$['data'][0]['CustomerID']"
+									"path": "['CustomerID']"
 								},
 								"sink": {
 									"name": "cust_id",
@@ -285,33 +276,16 @@
 							},
 							{
 								"source": {
-									"path": "$['data'][0]['CustomerName']"
+									"path": "['CustomerName']"
 								},
 								"sink": {
 									"name": "cust_name",
 									"type": "String"
 								}
-							},
-							{
-								"source": {
-									"path": "$['data'][0]['Gender']"
-								},
-								"sink": {
-									"name": "cust_gen",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"path": "$['data'][0]['Income']"
-								},
-								"sink": {
-									"name": "cust_income",
-									"type": "Decimal"
-								}
 							}
 						],
-						"collectionReference": "$['data']"
+						"collectionReference": "$['data']",
+						"mapComplexValuesToString": true
 					}
 				},
 				"inputs": [
