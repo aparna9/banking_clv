@@ -126,7 +126,11 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
-					"isSequential": true,
+					"items": {
+						"value": "@range(1, int(activity('customer_testdata').output['meta']['total_records']))",
+						"type": "Expression"
+					},
+					"isSequential": false,
 					"activities": [
 						{
 							"name": "load customer data",
