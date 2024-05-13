@@ -1,0 +1,16 @@
+{
+	"name": "bankingclv_oltp_customer_db",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "bankingclv_db",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzurePostgreSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "public",
+			"table": "bnk_customer"
+		}
+	}
+}

@@ -5,7 +5,14 @@
 			{
 				"name": "customer_testdata",
 				"type": "WebActivity",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "post the updated data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -15,14 +22,23 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"method": "POST",
+					"method": "GET",
 					"url": "https://bankclv.azurewebsites.net/api/customers"
 				}
 			},
 			{
 				"name": "account_testdata",
 				"type": "WebActivity",
-				"dependsOn": [],
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [
+					{
+						"activity": "post the updated data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -32,13 +48,41 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"method": "POST",
+					"method": "GET",
 					"url": "https://bankclv.azurewebsites.net/api/accounts"
 				}
 			},
 			{
 				"name": "transactions_testdata",
 				"type": "WebActivity",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [
+					{
+						"activity": "post the updated data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "GET",
+					"url": "https://bankclv.azurewebsites.net/api/transactions"
+				}
+			},
+			{
+				"name": "post the updated data",
+				"type": "WebActivity",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -50,8 +94,239 @@
 				"userProperties": [],
 				"typeProperties": {
 					"method": "POST",
-					"url": "https://bankclv.azurewebsites.net/api/transactions"
+					"url": "https://bankclv.azurewebsites.net/api/data"
 				}
+			},
+			{
+				"name": "OTLP EL",
+				"type": "DatabricksNotebook",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Users/amokkapati@mokkapati.onmicrosoft.com/ETL for OLTP"
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureDatabricks1",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "loop all customers",
+				"type": "ForEach",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@range(1, int(activity('customer_testdata').output['metadata']['total_records']))",
+						"type": "Expression"
+					},
+					"isSequential": false,
+					"activities": [
+						{
+							"name": "load customer data",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "RestSource",
+									"httpRequestTimeout": "00:01:40",
+									"requestInterval": "00.00:00:00.010",
+									"requestMethod": "GET",
+									"paginationRules": {
+										"supportRFC5988": "true"
+									}
+								},
+								"sink": {
+									"type": "AzurePostgreSQLSink",
+									"writeBatchSize": 1000000,
+									"writeBatchTimeout": "00:30:00",
+									"writeMethod": "CopyCommand"
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"mappings": [
+										{
+											"source": {
+												"path": "$['data'][0]['Age']"
+											},
+											"sink": {
+												"name": "cust_age",
+												"type": "Int32"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data'][0]['CustomerID']"
+											},
+											"sink": {
+												"name": "cust_id",
+												"type": "Int32"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data'][0]['CustomerName']"
+											},
+											"sink": {
+												"name": "cust_name",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data'][0]['Gender']"
+											},
+											"sink": {
+												"name": "cust_gen",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data'][0]['Income']"
+											},
+											"sink": {
+												"name": "cust_income",
+												"type": "Decimal"
+											}
+										}
+									]
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "customer_restsource",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "bankingclv_oltp_customer_db",
+									"type": "DatasetReference"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"name": "load customer datas",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "customer_testdata",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "RestSource",
+						"httpRequestTimeout": "00:01:40",
+						"requestInterval": "00.00:00:00.010",
+						"requestMethod": "GET"
+					},
+					"sink": {
+						"type": "AzurePostgreSQLSink",
+						"writeBatchSize": 1000000,
+						"writeBatchTimeout": "00:30:00",
+						"writeMethod": "CopyCommand"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "['Age']"
+								},
+								"sink": {
+									"name": "cust_age",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"path": "['CustomerID']"
+								},
+								"sink": {
+									"name": "cust_id",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"path": "['CustomerName']"
+								},
+								"sink": {
+									"name": "cust_name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['Gender']"
+								},
+								"sink": {
+									"name": "cust_gen",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['Income']"
+								},
+								"sink": {
+									"name": "cust_income",
+									"type": "Decimal"
+								}
+							}
+						],
+						"collectionReference": "$['data']",
+						"mapComplexValuesToString": true
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "customer_restsource",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "bankingclv_oltp_customer_db",
+						"type": "DatasetReference"
+					}
+				]
 			}
 		],
 		"annotations": []
