@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "bankingclvdatafact"
 		},
+		"testdata_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://bankclv.azurewebsites.net/api/customers"
+		},
 		"containerUri": {
 			"type": "string",
 			"metadata": "URI to storage account containing linked ARM templates"
@@ -33,6 +37,9 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"testdata_properties_typeProperties_url": {
+						"value": "[parameters('testdata_properties_typeProperties_url')]"
 					}
 				}
 			},
