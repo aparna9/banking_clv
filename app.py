@@ -1,5 +1,6 @@
 import json
 import numpy as np
+import pytz
 from faker import Faker
 from flask import Flask, jsonify, request
 from datetime import datetime
@@ -53,14 +54,36 @@ def generate_data():
 def update_data():
     global customers, accounts, transactions
     customers, accounts, transactions = generate_data()
-    current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    # Get the current UTC time
+    utc_now = datetime.datetime.utcnow()
+
+    # Set the desired timezone (e.g., Central Time)
+    central = pytz.timezone('America/Chicago')
+
+    # Convert UTC time to Central Time
+    central_now = utc_now.replace(tzinfo=pytz.utc).astimezone(central)
+    
+    current_datetime = central_now.strftime('%Y-%m-%d %H:%M:%S')
+
     metadata = {'generated_at': current_datetime}
     return jsonify({'message': 'Data refreshed successfully', 'metadata': metadata})
 
 @app.route('/api/customers', methods=['GET'])
 def get_customers():
     global customers
-    current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    # Get the current UTC time
+    utc_now = datetime.datetime.utcnow()
+
+    # Set the desired timezone (e.g., Central Time)
+    central = pytz.timezone('America/Chicago')
+
+    # Convert UTC time to Central Time
+    central_now = utc_now.replace(tzinfo=pytz.utc).astimezone(central)
+    
+    current_datetime = central_now.strftime('%Y-%m-%d %H:%M:%S')
+    
     metadata = {'total_records': len(customers), 'generated_at': current_datetime}
     return jsonify({'data': customers, 'metadata': metadata})
 
