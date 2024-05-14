@@ -195,6 +195,15 @@
 									"name": "cust_join_date",
 									"type": "DateTime"
 								}
+							},
+							{
+								"source": {
+									"path": "$['metadata']['generated_at']"
+								},
+								"sink": {
+									"name": "create_ts",
+									"type": "DateTime"
+								}
 							}
 						],
 						"collectionReference": "$['data']",
