@@ -1,0 +1,12 @@
+{
+	"name": "bankingclv_database",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "bankingclv_db",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzurePostgreSqlTable",
+		"schema": []
+	}
+}
