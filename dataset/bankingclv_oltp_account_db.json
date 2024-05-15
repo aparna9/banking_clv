@@ -1,0 +1,65 @@
+{
+	"name": "bankingclv_oltp_account_db",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "bankingclv_db",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzurePostgreSqlTable",
+		"schema": [
+			{
+				"name": "accnt_id",
+				"type": "integer",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "cust_id",
+				"type": "integer",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "accnt_type",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "accnt_bal",
+				"type": "numeric",
+				"precision": 15,
+				"scale": 2
+			},
+			{
+				"name": "accnt_open_dt",
+				"type": "date",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "accnt_close_dt",
+				"type": "date",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "create_ts",
+				"type": "timestamp without time zone",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "update_ts",
+				"type": "timestamp without time zone",
+				"precision": 0,
+				"scale": 0
+			}
+		],
+		"typeProperties": {
+			"schema": "public",
+			"table": "bnk_account"
+		}
+	}
+}
