@@ -222,7 +222,14 @@
 			{
 				"name": "load account data",
 				"type": "Copy",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "account_testdata",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -311,7 +318,8 @@
 								}
 							}
 						],
-						"collectionReference": "$['data']"
+						"collectionReference": "$['data']",
+						"mapComplexValuesToString": true
 					}
 				},
 				"inputs": [
