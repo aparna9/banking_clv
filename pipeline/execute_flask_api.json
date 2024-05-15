@@ -232,8 +232,100 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"enableStaging": false
-				}
+					"source": {
+						"type": "RestSource",
+						"httpRequestTimeout": "00:01:40",
+						"requestInterval": "00.00:00:00.010",
+						"requestMethod": "GET",
+						"paginationRules": {
+							"supportRFC5988": "true"
+						}
+					},
+					"sink": {
+						"type": "AzurePostgreSQLSink",
+						"writeBatchSize": 1000000,
+						"writeBatchTimeout": "00:30:00",
+						"writeMethod": "CopyCommand"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "['AccountBalance']"
+								},
+								"sink": {
+									"name": "accnt_bal",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"path": "['AccountID']"
+								},
+								"sink": {
+									"name": "accnt_id",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"path": "['AccountType']"
+								},
+								"sink": {
+									"name": "accnt_type",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['CloseDate']"
+								},
+								"sink": {
+									"name": "accnt_close_dt",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"path": "['CustomerID']"
+								},
+								"sink": {
+									"name": "cust_id",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"path": "['OpenDate']"
+								}
+							},
+							{
+								"source": {
+									"path": "$['metadata']['generated_at']"
+								},
+								"sink": {
+									"name": "create_ts",
+									"type": "DateTime"
+								}
+							}
+						],
+						"collectionReference": "$['data']"
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "account_restsouce",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "bankingclv_oltp_account_db",
+						"type": "DatasetReference"
+					}
+				]
 			}
 		],
 		"annotations": []
