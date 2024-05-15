@@ -96,7 +96,7 @@
 				}
 			},
 			{
-				"name": "load customer datas",
+				"name": "load customer data",
 				"type": "Copy",
 				"dependsOn": [
 					{
