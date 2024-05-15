@@ -247,7 +247,7 @@
 						"partitionOption": "None"
 					},
 					"dataset": {
-						"referenceName": "bankingclv_database",
+						"referenceName": "bankingclv_oltp_customer_db",
 						"type": "DatasetReference"
 					}
 				}
