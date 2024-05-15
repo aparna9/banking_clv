@@ -50,16 +50,19 @@ def generate_data():
 
     return customers, accounts, transactions
 
+def generate_ct_time():
+    utc_now = datetime.now(timezone.utc)
+    tz = pytz.timezone('America/Chicago')
+    central_now = utc_now.astimezone(tz)
+
+    return central_now
+
 @app.route('/api/data', methods=['POST'])
 def update_data():
     global customers, accounts, transactions
     customers, accounts, transactions = generate_data()
 
-    utc_now = datetime.now(timezone.utc)
-    tz = pytz.timezone('America/Chicago')
-    central_now = utc_now.astimezone(tz)
-
-    current_datetime = central_now.strftime('%Y-%m-%d %H:%M:%S')
+    current_datetime = generate_ct_time().strftime('%Y-%m-%d %H:%M:%S') 
     metadata = {'generated_at': current_datetime}
     return jsonify({'message': 'Data refreshed successfully', 'metadata': metadata})
 
@@ -67,25 +70,23 @@ def update_data():
 def get_customers():
     global customers
 
-    utc_now = datetime.now(timezone.utc)
-    tz = pytz.timezone('America/Chicago')
-    central_now = utc_now.astimezone(tz)
-
-    current_datetime = central_now.strftime('%Y-%m-%d %H:%M:%S')
+    current_datetime = generate_ct_time().strftime('%Y-%m-%d %H:%M:%S')
     metadata = {'total_records': len(customers), 'generated_at': current_datetime}
     return jsonify({'data': customers, 'metadata': metadata})
 
 @app.route('/api/accounts', methods=['GET'])
 def get_accounts():
     global accounts
-    current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    current_datetime = generate_ct_time().strftime('%Y-%m-%d %H:%M:%S')
     metadata = {'total_records': len(accounts), 'generated_at': current_datetime}
     return jsonify({'data': accounts, 'metadata': metadata})
 
 @app.route('/api/transactions', methods=['GET'])
 def get_transactions():
     global transactions
-    current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    current_datetime = generate_ct_time().strftime('%Y-%m-%d %H:%M:%S')
     metadata = {'total_records': len(transactions), 'generated_at': current_datetime}
     return jsonify({'data': transactions, 'metadata': metadata})
 
