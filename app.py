@@ -3,7 +3,7 @@ import numpy as np
 import pytz
 from faker import Faker
 from flask import Flask, jsonify, request
-from datetime import datetime,timezone
+from datetime import datetime,timezone,timedelta
 
 app = Flask(__name__)
 fake = Faker()
@@ -28,11 +28,23 @@ def generate_data():
     for customer in customers:
         num_accounts = np.random.randint(1, 4)
         for _ in range(num_accounts):
+            account_id = int(np.random.randint(1, 1000000))
+            account_type = fake.random_element(['Savings', 'Checking', 'Credit Card'])
+            account_balance = float(np.random.uniform(0, 100000))
+            open_date = fake.date_time_between(start_date='-5y', end_date='now') # Open date within the last 5 years
+            close_date = open_date + timedelta(days=np.random.randint(1, 365)) # Close date within 1 year of open date
+            close_date = close_date if np.random.random() < 0.2 else None  # 20% chance of account being closed
+
+            open_date_str = open_date.strftime('%Y-%m-%d') if open_date is not None else None
+            close_date_str = close_date.strftime('%Y-%m-%d') if close_date is not None else None
+
             accounts.append({
-                'AccountID': int(np.random.randint(1, 1000000)),
+                'AccountID': account_id,
                 'CustomerID': customer['CustomerID'],
-                'AccountBalance': float(np.random.uniform(0, 100000)),
-                'AccountType': fake.random_element(['Savings', 'Checking', 'Credit Card'])
+                'AccountBalance': account_balance,
+                'AccountType': account_type,
+                'OpenDate': open_date_str,
+                'CloseDate' : close_date_str
             })
 
     # Generate synthetic transaction data
