@@ -29,8 +29,6 @@
 			{
 				"name": "account_testdata",
 				"type": "WebActivity",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "post the updated data",
