@@ -81,7 +81,14 @@
 			{
 				"name": "post the updated data",
 				"type": "WebActivity",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "database timezone setup ",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -220,6 +227,30 @@
 						"type": "DatasetReference"
 					}
 				]
+			},
+			{
+				"name": "database timezone setup",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzurePostgreSqlSource",
+						"query": "SET timezone = 'America/Chicago';",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "bankingclv_oltp_customer_db",
+						"type": "DatasetReference"
+					}
+				}
 			}
 		],
 		"annotations": []
