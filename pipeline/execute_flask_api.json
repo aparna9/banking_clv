@@ -81,14 +81,7 @@
 			{
 				"name": "post the updated data",
 				"type": "WebActivity",
-				"dependsOn": [
-					{
-						"activity": "database timezone setup ",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -231,6 +224,8 @@
 			{
 				"name": "database timezone setup",
 				"type": "Lookup",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
