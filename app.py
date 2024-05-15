@@ -1,8 +1,9 @@
 import json
 import numpy as np
+import pytz
 from faker import Faker
 from flask import Flask, jsonify, request
-from datetime import datetime
+from datetime import datetime,timezone
 
 app = Flask(__name__)
 fake = Faker()
