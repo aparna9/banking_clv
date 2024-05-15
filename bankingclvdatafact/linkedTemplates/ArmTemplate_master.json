@@ -7,6 +7,26 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "bankingclvdatafact"
 		},
+		"AzureDatabricks1_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'AzureDatabricks1'"
+		},
+		"bankingclv_db_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'bankingclv_db'"
+		},
+		"AzureDatabricks1_properties_typeProperties_existingClusterId": {
+			"type": "string",
+			"defaultValue": "0506-154412-wmdm3j4"
+		},
+		"bankingclvdatabrickkeyvault_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://bakingclvkeyvault.vault.azure.net/"
+		},
+		"getdata_restservice_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://bankclv.azurewebsites.net/api"
+		},
 		"testdata_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://bankclv.azurewebsites.net/api/customers"
@@ -37,6 +57,21 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"AzureDatabricks1_accessToken": {
+						"value": "[parameters('AzureDatabricks1_accessToken')]"
+					},
+					"bankingclv_db_connectionString": {
+						"value": "[parameters('bankingclv_db_connectionString')]"
+					},
+					"AzureDatabricks1_properties_typeProperties_existingClusterId": {
+						"value": "[parameters('AzureDatabricks1_properties_typeProperties_existingClusterId')]"
+					},
+					"bankingclvdatabrickkeyvault_properties_typeProperties_baseUrl": {
+						"value": "[parameters('bankingclvdatabrickkeyvault_properties_typeProperties_baseUrl')]"
+					},
+					"getdata_restservice_properties_typeProperties_url": {
+						"value": "[parameters('getdata_restservice_properties_typeProperties_url')]"
 					},
 					"testdata_properties_typeProperties_url": {
 						"value": "[parameters('testdata_properties_typeProperties_url')]"
