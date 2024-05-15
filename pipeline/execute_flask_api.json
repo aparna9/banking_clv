@@ -306,6 +306,10 @@
 							{
 								"source": {
 									"path": "['OpenDate']"
+								},
+								"sink": {
+									"name": "accnt_open_dt",
+									"type": "DateTime"
 								}
 							},
 							{
