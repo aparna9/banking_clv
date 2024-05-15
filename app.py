@@ -54,26 +54,14 @@ def generate_data():
 def update_data():
     global customers, accounts, transactions
     customers, accounts, transactions = generate_data()
-
-    utc_now = datetime.now(timezone.utc)
-    tz = pytz.timezone('America/Chicago')
-    central_now = utc_now.astimezone(tz)
-    
-    current_datetime = central_now.strftime('%Y-%m-%d %H:%M:%S')
-
+    current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     metadata = {'generated_at': current_datetime}
     return jsonify({'message': 'Data refreshed successfully', 'metadata': metadata})
 
 @app.route('/api/customers', methods=['GET'])
 def get_customers():
     global customers
-
-    utc_now = datetime.now(timezone.utc)
-    tz = pytz.timezone('America/Chicago')
-    central_now = utc_now.astimezone(tz)
-    
-    current_datetime = central_now.strftime('%Y-%m-%d %H:%M:%S')
-    
+    current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     metadata = {'total_records': len(customers), 'generated_at': current_datetime}
     return jsonify({'data': customers, 'metadata': metadata})
 

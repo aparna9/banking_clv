@@ -5,7 +5,14 @@
 			{
 				"name": "customer_testdata",
 				"type": "WebActivity",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "post the updated data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -15,14 +22,23 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"method": "POST",
+					"method": "GET",
 					"url": "https://bankclv.azurewebsites.net/api/customers"
 				}
 			},
 			{
 				"name": "account_testdata",
 				"type": "WebActivity",
-				"dependsOn": [],
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [
+					{
+						"activity": "post the updated data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -32,13 +48,41 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"method": "POST",
+					"method": "GET",
 					"url": "https://bankclv.azurewebsites.net/api/accounts"
 				}
 			},
 			{
 				"name": "transactions_testdata",
 				"type": "WebActivity",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [
+					{
+						"activity": "post the updated data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "GET",
+					"url": "https://bankclv.azurewebsites.net/api/transactions"
+				}
+			},
+			{
+				"name": "post the updated data",
+				"type": "WebActivity",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -50,8 +94,134 @@
 				"userProperties": [],
 				"typeProperties": {
 					"method": "POST",
-					"url": "https://bankclv.azurewebsites.net/api/transactions"
+					"url": "https://bankclv.azurewebsites.net/api/data"
 				}
+			},
+			{
+				"name": "load customer datas",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "customer_testdata",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "RestSource",
+						"httpRequestTimeout": "00:01:40",
+						"requestInterval": "00.00:00:00.010",
+						"requestMethod": "GET"
+					},
+					"sink": {
+						"type": "AzurePostgreSQLSink",
+						"writeBatchSize": 1000000,
+						"writeBatchTimeout": "00:30:00",
+						"writeMethod": "CopyCommand"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "['Address']"
+								},
+								"sink": {
+									"name": "cust_address",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['Age']"
+								},
+								"sink": {
+									"name": "cust_age",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"path": "['CustomerID']"
+								},
+								"sink": {
+									"name": "cust_id",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"path": "['CustomerName']"
+								},
+								"sink": {
+									"name": "cust_name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['Gender']"
+								},
+								"sink": {
+									"name": "cust_gen",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['Income']"
+								},
+								"sink": {
+									"name": "cust_income",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"path": "['JoinDate']"
+								},
+								"sink": {
+									"name": "cust_join_date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"path": "$['metadata']['generated_at']"
+								},
+								"sink": {
+									"name": "create_ts",
+									"type": "DateTime"
+								}
+							}
+						],
+						"collectionReference": "$['data']",
+						"mapComplexValuesToString": true
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "customer_restsource",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "bankingclv_oltp_customer_db",
+						"type": "DatasetReference"
+					}
+				]
 			}
 		],
 		"annotations": []
