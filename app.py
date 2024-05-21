@@ -1,9 +1,39 @@
-import json
 import numpy as np
 import pytz
+import psycopg2 
+
+from psycopg2 import sql
 from faker import Faker
 from flask import Flask, jsonify, request
 from datetime import datetime,timezone,timedelta
+from azure.identity import DefaultAzureCredential,ManagedIdentityCredential
+from azure.keyvault.secrets import SecretClient
+
+
+# KeyVault parameters
+
+key_vault_name = "bankingclvdbcreds"
+key_vault_uri = f"https://{key_vault_name}.vault.azure.net"
+
+credential = ManagedIdentityCredential()
+client = SecretClient(vault_url=key_vault_uri, credential=credential)
+
+print("able to connect the uri")
+
+# retrieve secrets
+
+secret_password = client.get_secret("BANKINGCLV-DBPASSWORD").value
+print(secret_password)
+
+#  Connecting to database
+
+try:
+    cnx = psycopg2.connect(
+        user="bankingclvdb", password=secret_password, 
+        host="bankingclvpg.postgres.database.azure.com", port=5432, database="postgres") 
+    print("Connected")
+except Exception as e:
+    print(f"Connection Error : {e}")
 
 app = Flask(__name__)
 fake = Faker()
