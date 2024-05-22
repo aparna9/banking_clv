@@ -1,9 +1,39 @@
-import json
 import numpy as np
 import pytz
+import psycopg2 
+
+from psycopg2 import sql
 from faker import Faker
 from flask import Flask, jsonify, request
-from datetime import datetime,timezone
+from datetime import datetime,timezone,timedelta
+from azure.identity import DefaultAzureCredential,ManagedIdentityCredential
+from azure.keyvault.secrets import SecretClient
+
+
+# KeyVault parameters
+
+key_vault_name = "bankingclvdbcreds"
+key_vault_uri = f"https://{key_vault_name}.vault.azure.net"
+
+credential = ManagedIdentityCredential()
+client = SecretClient(vault_url=key_vault_uri, credential=credential)
+
+print("able to connect the uri")
+
+# retrieve secrets
+
+secret_password = client.get_secret("BANKINGCLV-DBPASSWORD").value
+print(secret_password)
+
+#  Connecting to database
+
+try:
+    cnx = psycopg2.connect(
+        user="bankingclvdb", password=secret_password, 
+        host="bankingclvpg.postgres.database.azure.com", port=5432, database="postgres") 
+    print("Connected")
+except Exception as e:
+    print(f"Connection Error : {e}")
 
 app = Flask(__name__)
 fake = Faker()
@@ -28,11 +58,23 @@ def generate_data():
     for customer in customers:
         num_accounts = np.random.randint(1, 4)
         for _ in range(num_accounts):
+            account_id = int(np.random.randint(1, 1000000))
+            account_type = fake.random_element(['Savings', 'Checking', 'Credit Card'])
+            account_balance = float(np.random.uniform(0, 100000))
+            open_date = fake.date_time_between(start_date='-5y', end_date='now') # Open date within the last 5 years
+            close_date = open_date + timedelta(days=np.random.randint(1, 365)) # Close date within 1 year of open date
+            close_date = close_date if np.random.random() < 0.2 else None  # 20% chance of account being closed
+
+            open_date_str = open_date.strftime('%Y-%m-%d') if open_date is not None else None
+            close_date_str = close_date.strftime('%Y-%m-%d') if close_date is not None else None
+
             accounts.append({
-                'AccountID': int(np.random.randint(1, 1000000)),
+                'AccountID': account_id,
                 'CustomerID': customer['CustomerID'],
-                'AccountBalance': float(np.random.uniform(0, 100000)),
-                'AccountType': fake.random_element(['Savings', 'Checking', 'Credit Card'])
+                'AccountBalance': account_balance,
+                'AccountType': account_type,
+                'OpenDate': open_date_str,
+                'CloseDate' : close_date_str
             })
 
     # Generate synthetic transaction data
@@ -50,32 +92,43 @@ def generate_data():
 
     return customers, accounts, transactions
 
+def generate_ct_time():
+    utc_now = datetime.now(timezone.utc)
+    tz = pytz.timezone('America/Chicago')
+    central_now = utc_now.astimezone(tz)
+
+    return central_now
+
 @app.route('/api/data', methods=['POST'])
 def update_data():
     global customers, accounts, transactions
     customers, accounts, transactions = generate_data()
-    current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    current_datetime = generate_ct_time().strftime('%Y-%m-%d %H:%M:%S') 
     metadata = {'generated_at': current_datetime}
     return jsonify({'message': 'Data refreshed successfully', 'metadata': metadata})
 
 @app.route('/api/customers', methods=['GET'])
 def get_customers():
     global customers
-    current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    current_datetime = generate_ct_time().strftime('%Y-%m-%d %H:%M:%S')
     metadata = {'total_records': len(customers), 'generated_at': current_datetime}
     return jsonify({'data': customers, 'metadata': metadata})
 
 @app.route('/api/accounts', methods=['GET'])
 def get_accounts():
     global accounts
-    current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    current_datetime = generate_ct_time().strftime('%Y-%m-%d %H:%M:%S')
     metadata = {'total_records': len(accounts), 'generated_at': current_datetime}
     return jsonify({'data': accounts, 'metadata': metadata})
 
 @app.route('/api/transactions', methods=['GET'])
 def get_transactions():
     global transactions
-    current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    current_datetime = generate_ct_time().strftime('%Y-%m-%d %H:%M:%S')
     metadata = {'total_records': len(transactions), 'generated_at': current_datetime}
     return jsonify({'data': transactions, 'metadata': metadata})
 

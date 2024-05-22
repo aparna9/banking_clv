@@ -5,6 +5,21 @@
 		"factoryName": {
 			"value": "bankingclvdatafact"
 		},
+		"AzureDatabricks1_accessToken": {
+			"value": ""
+		},
+		"bankingclv_db_connectionString": {
+			"value": ""
+		},
+		"AzureDatabricks1_properties_typeProperties_existingClusterId": {
+			"value": "0506-154412-wmdm3j4"
+		},
+		"bankingclvdatabrickkeyvault_properties_typeProperties_baseUrl": {
+			"value": "https://bakingclvkeyvault.vault.azure.net/"
+		},
+		"getdata_restservice_properties_typeProperties_url": {
+			"value": "https://bankclv.azurewebsites.net/api"
+		},
 		"testdata_properties_typeProperties_url": {
 			"value": "https://bankclv.azurewebsites.net/api/customers"
 		}

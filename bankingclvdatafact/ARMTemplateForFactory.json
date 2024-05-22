@@ -7,6 +7,26 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "bankingclvdatafact"
 		},
+		"AzureDatabricks1_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'AzureDatabricks1'"
+		},
+		"bankingclv_db_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'bankingclv_db'"
+		},
+		"AzureDatabricks1_properties_typeProperties_existingClusterId": {
+			"type": "string",
+			"defaultValue": "0506-154412-wmdm3j4"
+		},
+		"bankingclvdatabrickkeyvault_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://bakingclvkeyvault.vault.azure.net/"
+		},
+		"getdata_restservice_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://bankclv.azurewebsites.net/api"
+		},
 		"testdata_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://bankclv.azurewebsites.net/api/customers"
@@ -25,7 +45,14 @@
 					{
 						"name": "customer_testdata",
 						"type": "WebActivity",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "post the updated data",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "0.12:00:00",
 							"retry": 0,
@@ -35,16 +62,22 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"method": "POST",
+							"method": "GET",
 							"headers": {},
-							"url": "https://bankclv.azurewebsites.net/api/customers",
-							"body": {}
+							"url": "https://bankclv.azurewebsites.net/api/customers"
 						}
 					},
 					{
 						"name": "account_testdata",
 						"type": "WebActivity",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "post the updated data",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "0.12:00:00",
 							"retry": 0,
@@ -54,14 +87,40 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"method": "POST",
+							"method": "GET",
 							"headers": {},
-							"url": "https://bankclv.azurewebsites.net/api/accounts",
-							"body": {}
+							"url": "https://bankclv.azurewebsites.net/api/accounts"
 						}
 					},
 					{
 						"name": "transactions_testdata",
+						"type": "WebActivity",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
+						"dependsOn": [
+							{
+								"activity": "post the updated data",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"method": "GET",
+							"headers": {},
+							"url": "https://bankclv.azurewebsites.net/api/transactions"
+						}
+					},
+					{
+						"name": "post the updated data",
 						"type": "WebActivity",
 						"dependsOn": [],
 						"policy": {
@@ -75,9 +134,259 @@
 						"typeProperties": {
 							"method": "POST",
 							"headers": {},
-							"url": "https://bankclv.azurewebsites.net/api/transactions",
+							"url": "https://bankclv.azurewebsites.net/api/data",
 							"body": {}
 						}
+					},
+					{
+						"name": "load customer data",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "customer_testdata",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "RestSource",
+								"httpRequestTimeout": "00:01:40",
+								"requestInterval": "00.00:00:00.010",
+								"requestMethod": "GET"
+							},
+							"sink": {
+								"type": "AzurePostgreSQLSink",
+								"writeBatchSize": 1000000,
+								"writeBatchTimeout": "00:30:00",
+								"writeMethod": "CopyCommand"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"path": "[['Address']"
+										},
+										"sink": {
+											"name": "cust_address",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Age']"
+										},
+										"sink": {
+											"name": "cust_age",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"path": "[['CustomerID']"
+										},
+										"sink": {
+											"name": "cust_id",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"path": "[['CustomerName']"
+										},
+										"sink": {
+											"name": "cust_name",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Gender']"
+										},
+										"sink": {
+											"name": "cust_gen",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Income']"
+										},
+										"sink": {
+											"name": "cust_income",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"path": "[['JoinDate']"
+										},
+										"sink": {
+											"name": "cust_join_date",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"path": "$['metadata']['generated_at']"
+										},
+										"sink": {
+											"name": "create_ts",
+											"type": "DateTime"
+										}
+									}
+								],
+								"collectionReference": "$['data']",
+								"mapComplexValuesToString": true
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "customer_restsource",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "bankingclv_oltp_customer_db",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "load account data",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "account_testdata",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "RestSource",
+								"httpRequestTimeout": "00:01:40",
+								"requestInterval": "00.00:00:00.010",
+								"requestMethod": "GET",
+								"paginationRules": {
+									"supportRFC5988": "true"
+								}
+							},
+							"sink": {
+								"type": "AzurePostgreSQLSink",
+								"writeBatchSize": 1000000,
+								"writeBatchTimeout": "00:30:00",
+								"writeMethod": "CopyCommand"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"path": "[['AccountBalance']"
+										},
+										"sink": {
+											"name": "accnt_bal",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"path": "[['AccountID']"
+										},
+										"sink": {
+											"name": "accnt_id",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"path": "[['AccountType']"
+										},
+										"sink": {
+											"name": "accnt_type",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['CloseDate']"
+										},
+										"sink": {
+											"name": "accnt_close_dt",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"path": "[['CustomerID']"
+										},
+										"sink": {
+											"name": "cust_id",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"path": "[['OpenDate']"
+										},
+										"sink": {
+											"name": "accnt_open_dt",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"path": "$['metadata']['generated_at']"
+										},
+										"sink": {
+											"name": "create_ts",
+											"type": "DateTime"
+										}
+									}
+								],
+								"collectionReference": "$['data']",
+								"mapComplexValuesToString": true
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "account_restsouce",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "bankingclv_oltp_account_db",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
 					}
 				],
 				"policy": {
@@ -86,8 +395,201 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/testdata')]"
+				"[concat(variables('factoryId'), '/datasets/customer_restsource')]",
+				"[concat(variables('factoryId'), '/datasets/bankingclv_oltp_customer_db')]",
+				"[concat(variables('factoryId'), '/datasets/account_restsouce')]",
+				"[concat(variables('factoryId'), '/datasets/bankingclv_oltp_account_db')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/account_restsouce')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "getdata_restservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {
+					"relativeUrl": "https://bankclv.azurewebsites.net/api/accounts"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/getdata_restservice')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/bankingclv_oltp_account_db')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "bankingclv_db",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzurePostgreSqlTable",
+				"schema": [
+					{
+						"name": "accnt_id",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "cust_id",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "accnt_type",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "accnt_bal",
+						"type": "numeric",
+						"precision": 15,
+						"scale": 2
+					},
+					{
+						"name": "accnt_open_dt",
+						"type": "date",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "accnt_close_dt",
+						"type": "date",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "create_ts",
+						"type": "timestamp without time zone",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "update_ts",
+						"type": "timestamp without time zone",
+						"precision": 0,
+						"scale": 0
+					}
+				],
+				"typeProperties": {
+					"schema": "public",
+					"table": "bnk_account"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/bankingclv_db')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/bankingclv_oltp_customer_db')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "bankingclv_db",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzurePostgreSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "public",
+					"table": "bnk_customer"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/bankingclv_db')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/customer_restsource')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "getdata_restservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {
+					"relativeUrl": "https://bankclv.azurewebsites.net/api/customers"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/getdata_restservice')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureDatabricks1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://adb-1131199386266829.9.azuredatabricks.net",
+					"accessToken": {
+						"type": "SecureString",
+						"value": "[parameters('AzureDatabricks1_accessToken')]"
+					},
+					"existingClusterId": "[parameters('AzureDatabricks1_properties_typeProperties_existingClusterId')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/bankingclv_db')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzurePostgreSql",
+				"typeProperties": {
+					"connectionString": "[parameters('bankingclv_db_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/bankingclvdatabrickkeyvault')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureKeyVault",
+				"typeProperties": {
+					"baseUrl": "[parameters('bankingclvdatabrickkeyvault_properties_typeProperties_baseUrl')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/getdata_restservice')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "RestService",
+				"typeProperties": {
+					"url": "[parameters('getdata_restservice_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": false,
+					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/testdata')]",
@@ -98,8 +600,7 @@
 				"type": "WebConnection",
 				"typeProperties": {
 					"url": "[parameters('testdata_properties_typeProperties_url')]",
-					"enableServerCertificateValidation": false,
-					"authenticationType": "Anonymous"
+					"enableServerCertificateValidation": false
 				}
 			},
 			"dependsOn": []
