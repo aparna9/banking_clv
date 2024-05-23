@@ -6,22 +6,24 @@ from psycopg2 import sql
 from faker import Faker
 from flask import Flask, jsonify, request
 from datetime import datetime,timezone,timedelta
-from azure.identity import ClientSecretCredential
+from azure.identity import ClientSecretCredential,ManagedIdentityCredential
 from azure.keyvault.secrets import SecretClient
 
 # assign values 
-AZURE_CLIENT_ID = "6a394ed0-8825-44b2-baf5-acf94e95c705"
-AZURE_TENANT_ID = "056e6750-b527-40b5-bc55-1d8da5c3ffe4"
-AZURE_CLIENT_SECRET = "pnf8Q~xLMSfmZlWSGs0EDbpKrT3FLzayQYpUdc_G"
-AZURE_VAULT_URL = "https://bankingclvdbcreds.vault.azure.net/"
+# AZURE_CLIENT_ID = "6a394ed0-8825-44b2-baf5-acf94e95c705"
+# AZURE_TENANT_ID = "056e6750-b527-40b5-bc55-1d8da5c3ffe4"
+# AZURE_CLIENT_SECRET = "pnf8Q~xLMSfmZlWSGs0EDbpKrT3FLzayQYpUdc_G"
+AZURE_VAULT_URL = "https://bankingclvdbcreds.vault.azure.net"
 secret_name = "BANKINGCLV-DBPASSWORD"
 
 # create credential 
 
-credentials = ClientSecretCredential(
-AZURE_TENANT_ID,AZURE_CLIENT_ID, AZURE_CLIENT_SECRET
-)
+# credentials = ClientSecretCredential(
+# AZURE_TENANT_ID,AZURE_CLIENT_ID, AZURE_CLIENT_SECRET
+# )
 
+credentials = ManagedIdentityCredential()
+client = SecretClient(vault_url=AZURE_VAULT_URL,credential=credentials)
 
 #create secrent client object 
 
