@@ -6,34 +6,47 @@ from psycopg2 import sql
 from faker import Faker
 from flask import Flask, jsonify, request
 from datetime import datetime,timezone,timedelta
-from azure.identity import DefaultAzureCredential,ManagedIdentityCredential
+from azure.identity import ClientSecretCredential
 from azure.keyvault.secrets import SecretClient
 
+# assign values 
+AZURE_CLIENT_ID = "6a394ed0-8825-44b2-baf5-acf94e95c705"
+AZURE_TENANT_ID = "056e6750-b527-40b5-bc55-1d8da5c3ffe4"
+AZURE_CLIENT_SECRET = "pnf8Q~xLMSfmZlWSGs0EDbpKrT3FLzayQYpUdc_G"
+AZURE_VAULT_URL = "https://bankingclvdbcreds.vault.azure.net/"
+secret_name = "BANKINGCLV-DBPASSWORD"
 
-# KeyVault parameters
+# create credential 
 
-key_vault_name = "bankingclvdbcreds"
-key_vault_uri = f"https://{key_vault_name}.vault.azure.net"
+credentials = ClientSecretCredential(
+AZURE_TENANT_ID,AZURE_CLIENT_ID, AZURE_CLIENT_SECRET
+)
 
-credential = ManagedIdentityCredential()
-client = SecretClient(vault_url=key_vault_uri, credential=credential)
 
-print("able to connect the uri")
+#create secrent client object 
 
-# retrieve secrets
+secret_client = SecretClient(vault_url=AZURE_VAULT_URL, credential=credentials)
 
-secret_password = client.get_secret("BANKINGCLV-DBPASSWORD").value
-print(secret_password)
+# retrieve secret value
+
+secret = secret_client.get_secret(secret_name).value
 
 #  Connecting to database
 
 try:
     cnx = psycopg2.connect(
-        user="bankingclvdb", password=secret_password, 
-        host="bankingclvpg.postgres.database.azure.com", port=5432, database="postgres") 
-    print("Connected")
+        user="bankingclvdb", password=secret, 
+        host="bankingclvpg.postgres.database.azure.com", port=5432, database="banking_clv") 
 except Exception as e:
     print(f"Connection Error : {e}")
+
+# get all the existing customers 
+
+cur = cnx.cursor()
+cur.execute("select distinct cust_id from public.bnk_customer;")
+result = cur.fetchall()
+# print(f"sql result : {result}")
+
 
 app = Flask(__name__)
 fake = Faker()
@@ -41,10 +54,19 @@ fake = Faker()
 # Set seed for reproducibility
 np.random.seed(42)
 
+def generate_new_customers(exclude_customers , start = 1 , end = 1000000):
+    while True:
+        customer_id = np.random.randint(start, end)
+        if customer_id not in exclude_customers:
+            return customer_id
+
+
+
 def generate_data():
     # Generate synthetic customer data
     customers = [{
-        'CustomerID': int(np.random.randint(1, 1000000)),
+        # 'CustomerID': int(np.random.randint(1, 1000000)),
+        'CustomerID': generate_new_customers(result),
         'CustomerName': fake.name(),
         'Age': int(np.random.randint(18, 80)),
         'Gender': fake.random_element(['Male', 'Female']),
