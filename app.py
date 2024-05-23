@@ -8,31 +8,24 @@ from flask import Flask, jsonify, request
 from datetime import datetime,timezone,timedelta
 from azure.identity import ClientSecretCredential
 from azure.keyvault.secrets import SecretClient
-from dotenv import load_dotenv
-import os
 
-load_dotenv()
-
-# Get Values from environment file 
-
-client_id     = os.environ['AZURE_CLIENT_ID']
-tenant_id     = os.environ['AZURE_TENANT_ID']
-client_secret = os.environ['AZURE_CLIENT_SECRET']
-vault_url     = os.environ['AZURE_VAULT_URL']
-
+# assign values 
+AZURE_CLIENT_ID = "6a394ed0-8825-44b2-baf5-acf94e95c705"
+AZURE_TENANT_ID = "056e6750-b527-40b5-bc55-1d8da5c3ffe4"
+AZURE_CLIENT_SECRET = "pnf8Q~xLMSfmZlWSGs0EDbpKrT3FLzayQYpUdc_G"
+AZURE_VAULT_URL = "https://bankingclvdbcreds.vault.azure.net/"
 secret_name = "BANKINGCLV-DBPASSWORD"
 
 # create credential 
 
 credentials = ClientSecretCredential(
-    client_id=client_id,
-    client_secret=client_secret,
-    tenant_id=tenant_id
+AZURE_TENANT_ID,AZURE_CLIENT_ID, AZURE_CLIENT_SECRET
 )
+
 
 #create secrent client object 
 
-secret_client = SecretClient(vault_url=vault_url, credential=credentials)
+secret_client = SecretClient(vault_url=AZURE_VAULT_URL, credential=credentials)
 
 # retrieve secret value
 
